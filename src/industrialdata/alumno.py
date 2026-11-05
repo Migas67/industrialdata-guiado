@@ -54,7 +54,14 @@ def clasificar(row, previous, event_collision=False):
     machine_id, variable, unit y value; diferencia -> conflicting_value.
     Mismo contenido de negocio = duplicado aunque cambien event_id o recepción.
     """
-    raise NotImplementedError('A2 pendiente: clasificar')
+    if event_collision:
+          raise ValueError('event_id_collision')
+    if previous is None:
+        return 'new'
+    for campo in ('machine_id', 'variable', 'unit', 'value'):
+        if row[campo] != previous[campo]:
+            raise ValueError('conflicting_value')
+    return 'duplicate'
 
 def superaciones(values, limit):
     """A3. Lista de bool: valor estrictamente mayor que limit.

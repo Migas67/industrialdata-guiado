@@ -73,3 +73,18 @@ def test_A1_propio_fuera_de_ventana():
     assert a.normalizar(row|{'timestamp_utc':'2026-01-01T01:00:00Z'},s,c)
     with pytest.raises(ValueError,match='outside_window'):
         a.normalizar(row|{'timestamp_utc':'2026-01-01T01:01:00Z'},s,c)
+
+def test_A2_propio_duplicado_con_otro_event_id_y_recepcion():
+      row,_,_=sample()
+      reenvio=row|{'event_id':'otro','ingested_at_utc':'2026-01-02T00:00:00Z'}
+      assert a.clasificar(reenvio,row)=='duplicate'
+
+def test_A2_propio_conflicto_por_unidad():
+    row,_,_=sample()
+    with pytest.raises(ValueError,match='conflicting_value'):
+        a.clasificar(row,row|{'unit':'K'})
+
+def test_A2_propio_colision_tiene_prioridad():
+    row,_,_=sample()
+    with pytest.raises(ValueError,match='event_id_collision'):
+        a.clasificar(row,row.copy(),True)
