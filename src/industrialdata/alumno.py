@@ -10,8 +10,43 @@ def normalizar(row, sensor, catalog):
     Comprueba máquina/variable/unidad contra sensor; fechas con zona; ventana
     inclusiva del catálogo; valor numérico finito (no bool), rango FÍSICO y rejilla.
     Una superación del rango operativo se conserva. No modifiques row.
-    """
-    raise NotImplementedError('A1 pendiente: normalizar')
+    """ 
+    out = dict(row)                                   
+
+    # 1-3. Coherencia con el catálogo del sensor
+    if out.get('machine_id') != sensor['machine_id']:
+        raise ValueError('invalid_machine_id')
+    if out.get('variable') != sensor['variable']:
+        raise ValueError('invalid_variable')
+    if out.get('unit') != sensor['unit']:
+        raise ValueError('invalid_unit')
+
+    # 4. Fechas: timestamp() lanza ValueError si es ilegible o sin zona
+    ts = timestamp(out['timestamp_utc'])
+    out['timestamp_utc'] = iso(ts)
+    if out.get('ingested_at_utc') is not None:
+        out['ingested_at_utc'] = iso(timestamp(out['ingested_at_utc']))
+
+    # 5. Ventana del catálogo (límites inclusivos)
+    start = timestamp(catalog['start'])
+    end = timestamp(catalog['end'])
+    if not (start <= ts <= end):
+        raise ValueError('outside_window')
+
+    # 6. Valor numérico (bool es subclase de int: hay que excluirlo)
+    v = out.get('value')
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        raise ValueError('numeric_value_required')
+
+    # 7. Finito y dentro del rango FÍSICO (no el operativo)
+    if not math.isfinite(v) or not (sensor['physical_min'] <= v <= sensor['physical_max']):
+        raise ValueError('physical_range')
+
+    # 8. Rejilla de la cadencia
+    if (ts - start).total_seconds() % sensor['expected_period_s'] != 0:
+        raise ValueError('off_grid')
+
+    return out
 
 def clasificar(row, previous, event_collision=False):
     """A2. Devuelve 'new' o 'duplicate'; conflicto -> ValueError.

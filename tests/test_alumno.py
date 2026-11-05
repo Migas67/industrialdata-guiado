@@ -51,3 +51,25 @@ def test_A6_denominators(args,expected):
 def test_A7_pandas():
     df=pd.DataFrame([dict(machine_id='M01',timestamp_utc='2026-01-01T00:00:00Z',variable='power',value=2),dict(machine_id='M01',timestamp_utc='2026-01-01T00:01:00Z',variable='power',value=4),dict(machine_id='M01',timestamp_utc='2026-01-01T00:02:00Z',variable='temperature',value=90)])
     assert pandas_agregar(df).to_dict('records')==[dict(machine_id='M01',hour='2026-01-01 00:00:00',mean_power=3.0,n=2)]
+
+def test_A1_propio_limite_fisico_inclusivo():
+      row,s,c=sample()
+      assert a.normalizar(row|{'value':200},s,c)['value']==200
+      with pytest.raises(ValueError,match='physical_range'):
+          a.normalizar(row|{'value':200.1},s,c)
+
+def test_A1_propio_fecha_sin_zona():
+    row,s,c=sample()
+    with pytest.raises(ValueError,match='timezone_required'):
+        a.normalizar(row|{'timestamp_utc':'2026-01-01T00:01:00'},s,c)
+
+def test_A1_propio_recepcion_tardia_se_acepta():
+    row,s,c=sample()
+    out=a.normalizar(row|{'ingested_at_utc':'2026-03-01T00:00:00Z'},s,c)
+    assert out['ingested_at_utc']=='2026-03-01T00:00:00Z'
+
+def test_A1_propio_fuera_de_ventana():
+    row,s,c=sample()
+    assert a.normalizar(row|{'timestamp_utc':'2026-01-01T01:00:00Z'},s,c)
+    with pytest.raises(ValueError,match='outside_window'):
+        a.normalizar(row|{'timestamp_utc':'2026-01-01T01:01:00Z'},s,c)
