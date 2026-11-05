@@ -76,7 +76,15 @@ def estados(known_zero, values, planned, idle_kw):
     Parada: cero producción y potencia <= umbral; dividir según planned.
     No afirmar parada/consumo improductivo cuando producción es desconocida.
     """
-    raise NotImplementedError('A4 pendiente: estados')
+    idle, plan_stop, unplan_stop = [], [], []
+    for zero, kw, plan in zip(known_zero, values, planned):
+        parada = zero and kw <= idle_kw
+        idle.append(zero and kw > idle_kw)
+        plan_stop.append(parada and plan)
+        unplan_stop.append(parada and not plan)
+    return {'idle_consumption': idle,
+            'planned_stop': plan_stop,
+            'unplanned_stop': unplan_stop}# Placeholder implementation - replace with actual logic
 
 def energia(times, values, start, end, cadence=60):
     """A5. Devuelve (kWh, segundos cubiertos) para [start,end).

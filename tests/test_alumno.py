@@ -97,3 +97,16 @@ def test_A3_propio_superacion_suficiente():
 def test_A3_propio_lista_vacia_y_decimales():
     assert a.superaciones([],80)==[]
     assert a.superaciones([80.0,80.0001],80)==[False,True]
+
+def test_A4_propio_categorias_excluyentes():
+      flags=a.estados([True]*4,[0,.1,.2,5],[True,False,True,False],.1)
+      for i in range(4):
+          assert sum(flags[k][i] for k in flags)==1      # exactamente una categoría
+
+def test_A4_propio_produccion_desconocida_nunca_afirma_nada():
+    flags=a.estados([False]*3,[0,0.05,10],[True,False,False],.1)
+    assert all(not v for lista in flags.values() for v in lista)
+
+def test_A4_propio_longitudes_y_vacio():
+    flags=a.estados([],[],[],.1)
+    assert flags=={'idle_consumption':[],'planned_stop':[],'unplanned_stop':[]}
