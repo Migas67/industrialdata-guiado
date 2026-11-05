@@ -113,4 +113,12 @@ def intensidad(kwh, units_ok, energy_coverage, production_coverage, crossing):
     Requiere cobertura energética >= .95, producción >= .999999,
     ausencia de intervalos cruzados y units_ok > 0. No inventar ceros.
     """
-    raise NotImplementedError('A6 pendiente: intensidad')
+    if kwh is None or units_ok is None or units_ok <= 0:
+        return None                       # sin denominador válido
+    if energy_coverage is None or energy_coverage < 0.95:
+        return None                       # energía incompleta
+    if production_coverage is None or production_coverage < 0.999999:
+        return None                       # producción incompleta
+    if crossing:
+        return None                       # no repartimos piezas de un intervalo cruzado
+    return kwh / units_ok

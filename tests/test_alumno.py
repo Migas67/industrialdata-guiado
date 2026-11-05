@@ -128,3 +128,14 @@ def test_A5_propio_valor_izquierdo_y_hueco_parcial():
     kwh,seg=a.energia(times,[6,12,3,99],s,s+timedelta(minutes=15))
     assert seg==pytest.approx(120)                                   # solo 2 segmentos válidos
     assert kwh==pytest.approx(6*60/3600+3*60/3600)                   # usa valor izquierdo
+
+def test_A6_propio_limite_95_inclusivo():
+      assert a.intensidad(1,10,.95,1,False)==pytest.approx(.1)       # justo en el límite: evaluable
+      assert a.intensidad(1,10,.9499,1,False) is None
+
+def test_A6_propio_cero_kwh_no_es_no_evaluable():
+    assert a.intensidad(0,10,1,1,False)==0                          # 0 kWh medidos es un dato real
+
+def test_A6_propio_datos_ausentes():
+    assert a.intensidad(None,10,1,1,False) is None
+    assert a.intensidad(1,10,None,1,False) is None
