@@ -1,0 +1,42 @@
+{
+  "type": "record",
+  "name": "Incident",
+  "fields": [
+    {
+      "name": "episode_id",
+      "type": "string"
+    },
+    {
+      "name": "machine_id",
+      "type": "string"
+    },
+    {
+      "name": "sensor_id",
+      "type": "string"
+    },
+    {
+      "name": "rule",
+      "type": "string"
+    },
+    {
+      "name": "start_utc",
+      "type": "string"
+    },
+    {
+      "name": "end_utc",
+      "type": "string"
+    },
+    {
+      "name": "duration_s",
+      "type": "double"
+    },
+    {
+      "name": "note",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    }
+  ]
+}

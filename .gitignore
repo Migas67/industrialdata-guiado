@@ -1,0 +1,19 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+.DS_Store
+Thumbs.db
+# Histórico y salidas: solo se conserva el aviso de esta carpeta.
+data/*
+!data/README.md
+# Estas carpetas deben contener muestras y evidencias pequeñas elegidas por el equipo.
+reports/*.log
+reports/*.tmp

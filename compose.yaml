@@ -1,0 +1,92 @@
+name: industrialdata-guiado
+
+x-python: &python
+  image: industrialdata-guiado:0.1
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+  environment: &environment
+    DATA_ROOT: /data
+    PYTHONPATH: /app/src
+    PGHOST: db
+    PGPORT: '5432'
+    PGDATABASE: ${POSTGRES_DB:-industrialdata}
+    PGUSER: ${POSTGRES_USER:-industrialdata}
+    PGPASSWORD: ${POSTGRES_PASSWORD:-industrialdata_local_aula}
+  volumes: &volumes
+    - ./data:/data
+    - ./src:/app/src:ro
+    - ./tests:/app/tests:ro
+    - ./scripts:/app/scripts:ro
+    - ./dashboard:/app/dashboard:ro
+  networks: [backend]
+
+services:
+  db:
+    image: postgres:16.8-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-industrialdata}
+      POSTGRES_USER: ${POSTGRES_USER:-industrialdata}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-industrialdata_local_aula}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    networks: [backend]
+
+  simulator:
+    <<: *python
+    profiles: [tools]
+    command: [python, -m, industrialdata.generate, --seed, '42', --scenario, demo]
+    depends_on:
+      db: {condition: service_healthy}
+
+  pipeline:
+    <<: *python
+    profiles: [tools]
+    command: [python, -m, industrialdata.run]
+    depends_on:
+      db: {condition: service_healthy}
+
+  dashboard:
+    <<: *python
+    environment:
+      DATA_ROOT: /data
+      PYTHONPATH: /app/src
+    volumes:
+      - ./data:/data:ro
+      - ./dashboard:/app/dashboard:ro
+    command: [streamlit, run, dashboard/app.py, --server.address=0.0.0.0, --server.port=8501, --server.headless=true, --browser.gatherUsageStats=false]
+    ports:
+      - '127.0.0.1:${DASHBOARD_PORT:-8503}:8501'
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+    networks: [backend]
+
+  spark:
+    profiles: [spark]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.spark
+    image: industrialdata-guiado-spark:0.1
+    environment:
+      DATA_ROOT: /data
+      PYTHONPATH: /app/src
+      SPARK_LOCAL_IP: 127.0.0.1
+    volumes: *volumes
+    command: [python, scripts/compare_spark.py]
+    mem_limit: 3g
+    cpus: 2
+    networks: [backend]
+
+networks:
+  backend:
+volumes:
+  pgdata:

@@ -1,0 +1,236 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>IndustrialData guiado · Enunciado individual</title><style>body{font-family:Segoe UI,Arial,sans-serif;color:#17212b;background:#eef2f5;margin:0;line-height:1.6}main{max-width:1000px;margin:auto;background:white;padding:48px 54px}h1{font-size:36px;color:#000;line-height:1.15}h2{font-size:24px;margin-top:38px;color:#000}p,li{font-size:16px}li{margin:8px 0}table{border-collapse:collapse;width:100%;font-size:14px;margin:20px 0}th,td{border:1px solid #d9d9d9;padding:12px;text-align:left;vertical-align:top}th{background:#e2ecf3;color:#000}tr:nth-child(even){background:#f6f8fa}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f5f7;padding:18px;font-size:13px}a{color:#075b8c}nav{line-height:1.9} @media print{body{background:white}main{padding:0;max-width:none}h2{break-after:avoid}tr{break-inside:avoid}thead{display:table-header-group}p,li{orphans:3;widows:3}nav{display:none}}</style><main>
+<h1 id="s0">IndustrialData · Versión guiada individual</h1>
+<div style="padding:22px;background:#e8f2ff;border-left:5px solid #175b87"><h2>Tu proyecto industrial, paso a paso</h2><p>Recibes Docker, generador, catálogo, lectura/escritura, integración temporal, publicación, panel y herramientas de medición. Completarás A1–A6 en <code>alumno.py</code>, A7 en <code>experimentos.py</code>, pruebas propias e interpretación. No debes reescribir las piezas entregadas.</p><p><a href="https://github.com/iesataulfoargentasor/industrialdata-ut1-guiado#readme">Arranque y creación de TU repositorio</a> · <a href="https://github.com/iesataulfoargentasor/industrialdata-ut1-guiado/blob/main/docs/GUIA.md">Actividades paso a paso</a> · <a href="https://github.com/iesataulfoargentasor/industrialdata-ut1-guiado/blob/main/docs/EVIDENCIAS.md">Requisitos y evidencias</a></p><p><strong>Azul: proporcionado. Naranja: alumno.</strong></p><img src="diagramas/arquitectura.svg" alt="Arquitectura con componentes proporcionados y actividades del alumno" style="width:100%;height:auto"><h3>Cómo se evalúa</h3><p>Los criterios y pesos del RA1 se detallan en la rúbrica. Los descriptores siguientes se aplican distinguiendo tu código del proporcionado: se evalúan A1–A7, pruebas, comprensión, interpretación y defensa, no la autoría de los módulos recibidos. El proyecto es individual. La guía identifica los componentes proporcionados y las actividades que debes completar.</p></div>
+<p>Práctica integradora de la UT1 y del RA1 de Sistemas de Big Data</p>
+<p>I.E.S. Ataulfo Argenta · Castro Urdiales · Curso de especialización en Inteligencia Artificial y Big Data · Curso 2026–2027</p>
+<p>Construid una plataforma reproducible que integre telemetría industrial, producción y mantenimiento. Debe detectar incidencias, explicar la calidad de sus datos y mostrar indicadores verificables. El proyecto se desarrollará de forma individual: cada alumno tendrá su propio repositorio en su cuenta de GitHub y podrá presentarse como portfolio técnico en GitHub.</p>
+<p>Dedicación orientativa del núcleo guiado: 12–14 horas, por confirmar en aula. Los experimentos se integran en las sesiones de UT1; no se garantiza que todo el alcance se complete en ese tiempo. La fecha de entrega se establecerá en Moodle. Esta práctica utiliza una empresa ficticia y datos sintéticos; no representa instalaciones ni datos de una empresa real.</p>
+<h2 id="s1">1 El encargo</h2>
+<p>Cada alumno asume el papel de especialista en datos de una empresa ficticia de componentes industriales situada en el entorno de Castro Urdiales y Bizkaia. La planta tiene motores, bombas y compresores. Sus mediciones, partes de producción y registros de mantenimiento están separados. Algunas mediciones se repiten, otras llegan tarde y algunos sensores dejan de informar.</p>
+<p>El responsable de planta necesita saber qué máquinas presentan anomalías, cuándo se producen las paradas, qué equipos consumen más energía por unidad correcta y qué conclusiones están limitadas por datos incompletos.</p>
+<p>Entregad un sistema que pueda reproducirse en otro equipo siguiendo el README. Las incidencias se detectarán mediante reglas explicables y estadística descriptiva. La asociación entre una anomalía y una intervención no demuestra que una cause la otra. No se exige un modelo predictivo ni conexión a maquinaria real.</p>
+<h2 id="s2">2 Alcance y organización</h2>
+<p>El núcleo obligatorio comprende un generador reproducible, cuatro fuentes lógicas, procesamiento por microlotes, controles de calidad, almacenamiento Parquet, catálogo PostgreSQL, un panel y pruebas automáticas. Un microlote es un conjunto de mediciones generado y procesado de una vez; no hace falta esperar el tiempo simulado.</p>
+<p>Cada alumno realizará infraestructura e ingesta, transformación y calidad, y análisis y presentación. Planificad las tareas por hitos y registrad las revisiones y comprobaciones propias. Cada alumno debe poder explicar el flujo completo. Los notebooks documentan experimentos; la carga ordinaria debe funcionar sin abrirlos.</p>
+<p>Para mantener un alcance manejable, el panel tendrá tres vistas, el generador será sencillo y no se exige una interfaz de administración. MQTT, Kafka, Kubernetes, nube y aprendizaje automático son ampliaciones. No sustituyen requisitos obligatorios ni añaden puntos por sí solos.</p>
+<h2 id="s3">3 Fuentes y contrato de datos</h2>
+<p>El generador y el catálogo se entregan implementados; cada alumno los ejecutará y explicará las fuentes, los parámetros y las muestras. No dependéis de un dataset empresarial ni de una API externa. Utilizad semilla 42 para el escenario de referencia y permitid cambiar semilla, periodo y número de máquinas. Guardad esos parámetros en un manifiesto.</p>
+<p>Representad al menos seis máquinas, dos de cada tipo. El catálogo definirá qué variables corresponden a cada equipo: no asignéis presión a un motor si no tiene ese sensor. Cada fila de telemetría representa una observación de una variable de un sensor en un instante.</p>
+<table><thead><tr><th>Fuente</th><th>Campos mínimos</th><th>Formato y reglas</th></tr></thead><tbody>
+<tr><td>Telemetría</td><td>event_id, sensor_id, machine_id, timestamp_utc, variable, value, unit, ingested_at_utc</td><td>JSON Lines; un objeto por línea. Un evento tiene identidad estable aunque se vuelva a recibir.</td></tr>
+<tr><td>Producción</td><td>production_id, machine_id, start_utc, end_utc, product_id, units_ok, units_rejected</td><td>CSV; intervalo semiabierto [inicio, fin). Cantidades enteras no negativas. Sin intervalos solapados para una misma máquina.</td></tr>
+<tr><td>Mantenimiento</td><td>maintenance_id, machine_id, start_utc, end_utc, planned, intervention_type</td><td>CSV; cierre opcional para intervenciones abiertas. No incluir datos personales.</td></tr>
+<tr><td>Catálogo</td><td>machine_id, machine_type, location, sensor_id, variable, unit, expected_period_s, operational_min, operational_max</td><td>Tablas relacionadas en PostgreSQL. Claves únicas; límites por máquina y variable. Añadir ventanas de operación planificada y versión del catálogo.</td></tr>
+</tbody></table>
+<h2 id="s4">4 Tiempo unidades y procedencia</h2>
+<p>Guardad tiempos en UTC con zona explícita. El panel puede mostrarlos en Europe/Madrid e indicará la zona. Usad °C, mm/s para vibración, kW para potencia y bar para presión. Los umbrales serán parámetros didácticos del simulador, no límites de seguridad de equipos reales.</p>
+<p>La clave semántica de una observación será sensor_id + timestamp_utc. Dos recepciones idénticas son duplicados; dos valores distintos para esa misma clave son un conflicto que debe quedar registrado. No dedupliquéis únicamente por machine_id.</p>
+<p>Conservad por fichero source_file, hash SHA256, fecha de ingesta, filas, versión de esquema y run_id. No modifiquéis los originales. Una línea ilegible también cuenta como entrada y se registra como rechazo.</p>
+<ul>
+<li>Raw: archivos originales y manifiestos. Se permite añadir nuevas entradas; no sobrescribir el histórico anterior.</li>
+<li>Silver: observaciones y tablas normalizadas en Parquet; marcas de calidad y referencia a la fuente.</li>
+<li>Gold: agregados por máquina e intervalo e incidencias consolidadas para el panel.</li>
+<li>Quarantine: registros rechazados o conflictivos con motivo y referencia. Los errores de ingesta se separan de las anomalías de proceso.</li>
+</ul>
+<h2 id="s5">5 Escenarios que debe generar el simulador</h2>
+<p>Generad primero una serie base coherente y después introducid incidencias en intervalos explícitos. Guardad el listado en escenarios_esperados.json con máquina, sensor, inicio, fin y tipo. Ese archivo sirve para evaluar, pero el detector no puede leerlo para decidir qué alertas producir.</p>
+<p>El escenario funcional incluirá las siguientes situaciones y al menos un intervalo normal sin incidencias. Los duplicados y errores se aplican después de generar la base. Los tiempos de recepción pueden diferir de los tiempos de observación.</p>
+<table><thead><tr><th>Caso</th><th>Situación introducida</th><th>Resultado exigido</th></tr></thead><tbody>
+<tr><td>S01</td><td>Un fichero completo se procesa dos veces</td><td>La segunda carga no incrementa las observaciones ni duplica incidencias.</td></tr>
+<tr><td>S02</td><td>Sensor sin mensajes durante 10 minutos de operación planificada</td><td>Se detecta falta de cobertura; no se afirma que la máquina esté parada.</td></tr>
+<tr><td>S03</td><td>Temperatura superior al límite durante 5 muestras consecutivas</td><td>Se genera un episodio con inicio, fin y valores que lo justifican.</td></tr>
+<tr><td>S04</td><td>Vibración superior al límite durante 3 muestras consecutivas</td><td>Se genera un episodio; el valor se conserva como anomalía válida.</td></tr>
+<tr><td>S05</td><td>Potencia por encima del umbral de reposo durante 10 minutos con producción conocida igual a cero</td><td>Se señala consumo sin producción. Producción desconocida no equivale a cero.</td></tr>
+<tr><td>S06</td><td>Parada planificada y parada imprevista con telemetría disponible</td><td>Se distinguen usando el calendario y las intervenciones, sin contar solapamientos dos veces.</td></tr>
+<tr><td>S07</td><td>Fecha ilegible, unidad desconocida y máquina inexistente</td><td>Se registran rechazos trazables, sin pérdidas silenciosas en los joins.</td></tr>
+<tr><td>S08</td><td>Un lote llega con retraso y otra observación contradice una existente</td><td>Se actualiza el periodo afectado sin duplicados y se registra el conflicto según la política documentada.</td></tr>
+</tbody></table>
+<h2 id="s6">6 Reglas mínimas de detección</h2>
+<p>La detección de huecos y la agrupación temporal se proporcionan; completad las decisiones A3–A4 y probad las reglas S02 a S06. Una secuencia consecutiva exige cadencia válida: si entre observaciones hay más de 1,5 veces el periodo esperado, interrumpid la secuencia. Los episodios se agrupan por máquina y regla; añadid un identificador estable y documentad cuándo se cierra o actualiza un episodio.</p>
+<p>Para inferir parada, exigid potencia observada por debajo del umbral de reposo y producción conocida igual a cero durante al menos 10 minutos. La coincidencia con una intervención planificada o una ventana fuera del horario previsto debe conservarse en la clasificación. La ausencia de datos se clasifica como desconocida.</p>
+<p>Si un intervalo tiene datos insuficientes, indicad no evaluable. No rellenéis con cero las mediciones ausentes. La imputación, si se usa para una visualización exploratoria, debe marcarse y no podrá ocultar huecos ni activar reglas como si fuera una observación real.</p>
+<p>La guía distingue las piezas proporcionadas y las actividades individuales. Sigue el calendario confirmado en Moodle.</p><h2 id="s7">7 Infraestructura Docker obligatoria</h2>
+<p>Entregad compose.yaml y los Dockerfiles necesarios. El proyecto debe ejecutarse con Docker y Docker Compose, sin instalar Python ni PostgreSQL en el equipo anfitrión. La primera construcción puede necesitar internet; la demostración posterior debe usar los datos locales.</p>
+<p>Los nombres siguientes forman el contrato operativo del proyecto. Simulator, pipeline y dashboard pueden compartir una imagen Python; no se exige construir una imagen distinta por servicio.</p>
+<table><thead><tr><th>Servicio</th><th>Función</th><th>Persistencia y comunicación</th></tr></thead><tbody>
+<tr><td>db</td><td>PostgreSQL con catálogo, ventanas planificadas y registro de cargas</td><td>Volumen pgdata. Healthcheck. Acceso interno como db:5432; no necesita puerto público.</td></tr>
+<tr><td>simulator</td><td>Generación de fuentes y escenarios mediante parámetros</td><td>Trabajo de una sola ejecución. Escribe en data/raw y deja manifiesto.</td></tr>
+<tr><td>pipeline</td><td>Ingesta, validación, transformación, reglas y agregados</td><td>Trabajo de una sola ejecución. Lee raw, consulta db y escribe silver, gold, quarantine y reports.</td></tr>
+<tr><td>dashboard</td><td>Panel Streamlit con las tres vistas</td><td>Lee resultados publicados. Puerto local 127.0.0.1:8501. Debe mostrar un mensaje si todavía no hay resultados.</td></tr>
+<tr><td>notebook y spark</td><td>Exploración y comparación de motores</td><td>Perfiles opcionales de Compose. Spark local con recursos limitados, o Colab para la comparación obligatoria.</td></tr>
+</tbody></table>
+<h2 id="s8">8 Arranque persistencia y comandos</h2>
+<p>Incluid .env.example con variables y valores de ejemplo; excluid .env del repositorio. Fijad versiones de imágenes y bibliotecas y registrad las efectivamente utilizadas. Implementad comprobaciones de disponibilidad: depends_on sin healthcheck no garantiza que PostgreSQL esté listo.</p>
+<p>El primer arranque inicializará esquema y catálogo; los siguientes conservarán datos. Si empleáis scripts de inicialización de PostgreSQL, explicad que se ejecutan sobre un volumen nuevo y cómo se aplican cambios posteriores. No dependáis de borrar volúmenes para repetir una carga.</p>
+<p>Usad una red interna de Compose y almacenamiento persistente. Publicad los resultados únicamente al completar una ejecución correcta, evitando que el panel lea archivos a medio escribir. Registrad fallos con run_id y un código de salida distinto de cero.</p>
+<p>Implementad estos comandos o equivalentes claramente documentados. La interfaz y los servicios están proporcionados; el pipeline solo publica cuando completas A1–A6. Usa el README para el primer arranque:</p>
+<pre>docker compose config
+docker compose build
+docker compose up -d db
+docker compose run --rm simulator python -m industrialdata.generate --seed 42 --scenario demo
+docker compose run --rm pipeline python -m industrialdata.run --input /data/raw
+docker compose up -d dashboard
+docker compose run --rm pipeline python -m pytest
+docker compose down</pre>
+<h2 id="s9">9 Tareas e hitos</h2>
+<table><thead><tr><th>Hito guiado</th><th>Tiempo orientativo</th><th>Trabajo individual</th></tr></thead><tbody>
+<tr><td>H1 Comprensión y modelo</td><td>2 h</td><td>Reconocer fuentes, claves, unidades y relaciones. Planificar tareas.</td></tr>
+<tr><td>H2 Arranque y simulación</td><td>1 h</td><td>Ejecutar infraestructura y generador proporcionados. Explorar muestras y parámetros.</td></tr>
+<tr><td>H3 Ingesta y calidad</td><td>3 h</td><td>Completar A1–A2, probar validación, duplicados y conflictos.</td></tr>
+<tr><td>H4 Análisis y panel</td><td>3 h</td><td>Completar A3–A6 y alimentar el panel proporcionado con resultados propios.</td></tr>
+<tr><td>H5 Experimentos de UT1</td><td>Sesiones de UT1</td><td>Completar A7 y ejecutar formatos, complejidad y volúmenes con herramientas proporcionadas. Registrar conclusiones.</td></tr>
+<tr><td>H6 Verificación y entrega</td><td>3–5 h</td><td>Añadir pruebas, verificar persistencia y documentar y defender el proyecto.</td></tr>
+<tr><td>Núcleo guiado</td><td>12–14 h</td><td>Estimación pendiente de contraste en aula. H5 se integra en UT1; no se garantiza todo el alcance en estas horas.</td></tr>
+</tbody></table>
+<h2 id="s10">10 Indicadores que debéis calcular</h2>
+<p>Definid para cada indicador su unidad, granularidad, fórmula, filtros y tratamiento de datos incompletos. Todas las tablas del panel mostrarán el periodo y la última ejecución correcta.</p>
+<ul>
+<li>Cobertura por sensor: marcas temporales distintas válidas / marcas esperadas durante las ventanas de monitorización. Una anomalía físicamente plausible cuenta como observación; un registro inválido no. No usar las filas recibidas, porque los duplicados inflan el resultado.</li>
+<li>Duplicados, rechazos y conflictos: número y porcentaje sobre las recepciones del lote. Las categorías de reconciliación serán mutuamente excluyentes; las etiquetas adicionales de calidad pueden coexistir.</li>
+<li>Energía: integrar potencia en kW a lo largo del tiempo en horas. Usad retención del valor anterior solo hasta 1,5 veces la cadencia esperada; los intervalos mayores quedan sin estimar. Recortad al intervalo analizado y acompañad kWh de cobertura temporal. No suméis potencias como si fueran energía.</li>
+<li>Intensidad energética: kWh / unidades correctas en el mismo intervalo. Si hay cero unidades o cobertura energética inferior al 95 %, mostrar no evaluable para la comparación entre máquinas. Conservad el dato parcial con su etiqueta para exploración.</li>
+<li>Paradas: duración de la unión de intervalos detectados, separando planificadas, imprevistas y periodos desconocidos. No sumar dos veces intervalos solapados.</li>
+<li>Incidencias: número de episodios, duración, máquina, regla y severidad didáctica. Diferenciad episodios de muestras que incumplen una regla.</li>
+<li>Calidad de producción: unidades rechazadas / (unidades correctas + rechazadas). Con denominador cero, mostrar no evaluable.</li>
+</ul>
+<h2 id="s11">11 Integración y fundamentos matemáticos</h2>
+<p>Construid conjuntos de máquinas presentes en cada fuente y calculad intersecciones y diferencias. Mostrad las claves huérfanas y su tratamiento. Definid las cardinalidades del modelo antes de realizar joins.</p>
+<p>Relacionad observaciones con intervalos de producción y mantenimiento usando [inicio, fin). Evitad un join muchos a muchos que multiplique mediciones o unidades. Para el panel, agregad primero a una granularidad común y verificad conteos y totales antes y después.</p>
+<p>Expresad al menos tres reglas mediante condiciones lógicas y probad sus tablas de casos: se cumple, no se cumple y no evaluable por ausencia de información.</p>
+<p>Comparad detección de identificadores duplicados con búsqueda en lista y con conjunto. Explicad el coste esperado total, incluido construir la estructura, y medid con varios tamaños. Documentad que el rendimiento de conjuntos se refiere al comportamiento medio esperado.</p>
+<p>Modelad la relación máquina–sensor e indicad cuándo constituye una función en cada dirección. Los grafos y la combinatoria pueden añadirse si responden a una pregunta concreta; no es obligatorio introducirlos artificialmente.</p>
+<h2 id="s12">12 Panel e informe de análisis</h2>
+<p>El panel tendrá tres vistas: estado e incidencias de máquinas; producción y energía; calidad y trazabilidad. Permitirá filtrar por máquina y periodo y consultar la evidencia de una incidencia. Usad unidades, etiquetas y fechas legibles.</p>
+<p>El informe técnico tendrá entre 6 y 10 páginas, sin contar anexos. Incluirá arquitectura, modelo, decisiones de limpieza, cuatro hallazgos sustentados en gráficos o tablas, rendimiento y limitaciones. Al menos un hallazgo debe explicar cómo cambia una conclusión al considerar la calidad de los datos.</p>
+<p>No presentéis valores del simulador como observaciones de una empresa real. No denominéis fallo mecánico confirmado a una alerta por umbral. Explicad las decisiones que serían necesarias antes de conectar el sistema a una planta.</p>
+<h2 id="s13">13 Volumen formatos y rendimiento</h2>
+<p>Preparad tres perfiles: prueba funcional de 6 máquinas durante 24 horas, con una observación por minuto y variable; perfil intermedio de al menos 100 000 observaciones; perfil ampliado de al menos 1 000 000. Ampliad máquinas o duración manteniendo claves, intervalos y relaciones coherentes. No dupliquéis filas para inflar el volumen.</p>
+<p>Si el hardware impide el perfil ampliado, documentad el límite y acordad con el profesor un tamaño alternativo o ejecución en Colab. La nota depende del experimento y su análisis, no de disponer de un ordenador más potente. Este volumen permite estudiar escalabilidad; no acredita por sí solo una instalación Big Data distribuida.</p>
+<p>Comparad lectura y una misma agregación sobre CSV y Parquet. Repetid tres veces con las mismas condiciones y presentad mediana, filas, MB, tiempo y memoria máxima, indicando cómo se midió. Separad el arranque del motor y describid el efecto de la caché.</p>
+<p>Ejecutad una agregación equivalente en pandas y PySpark: por ejemplo, potencia media y cantidad de observaciones por máquina y hora. Comprobad igualdad de claves y conteos y tolerancia numérica explícita. Incluid el notebook ejecutado y las versiones. Spark en modo local debe identificarse como tal. Se admite utilizar el entorno Colab trabajado en UT1.</p>
+<p>Exportad un conjunto pequeño de incidencias a Avro con esquema explícito, incluyendo un campo opcional. Releedlo y verificad campos y número de registros. Justificad el uso de JSON para intercambio, Parquet para análisis y Avro para datos con esquema.</p>
+<p>Estimad almacenamiento mensual a partir de bytes por observación y cadencia. Separad el tamaño de los datos del volumen Docker completo. Si estimáis electricidad, indicad potencia y tarifa supuestas; no confundáis RAM con energía ni presentéis hipótesis como mediciones.</p>
+<h2 id="s14">14 Pruebas de aceptación</h2>
+<p>Entregad pruebas automáticas con datos pequeños y resultados esperados calculados de forma independiente. Un README que afirma que funciona no sustituye estas pruebas.</p>
+<table><thead><tr><th>Prueba</th><th>Condición para aceptarla</th></tr></thead><tbody>
+<tr><td>P01 Arranque</td><td>Desde un clon limpio, la secuencia documentada produce resultados y permite abrir el panel. No requiere instalaciones manuales dentro de contenedores.</td></tr>
+<tr><td>P02 Repetición</td><td>Cargar dos veces el mismo fichero no modifica el número de observaciones consolidadas ni duplica episodios. La segunda recepción queda registrada.</td></tr>
+<tr><td>P03 Reconciliación</td><td>Entradas = nuevas aceptadas + duplicadas + rechazadas/conflictivas. Las categorías no se solapan y cada rechazo conserva motivo.</td></tr>
+<tr><td>P04 Integración</td><td>Ninguna máquina desconocida desaparece silenciosamente y los joins no multiplican unidades ni mediciones.</td></tr>
+<tr><td>P05 Escenarios</td><td>S02–S06 se detectan con máquina y regla correctas. En el caso funcional regular, inicio y fin coinciden con lo esperado con tolerancia de una cadencia. El intervalo normal no genera esos episodios.</td></tr>
+<tr><td>P06 Datos tardíos</td><td>Un lote tardío actualiza el periodo afectado y sus agregados, conservando trazabilidad e identidad estable.</td></tr>
+<tr><td>P07 Energía</td><td>Potencia constante de 2 kW entre 00:00 y 00:30, con muestras cada minuto e incluido el extremo final, produce 1 kWh. Otro caso con hueco largo no lo rellena como si estuviera observado.</td></tr>
+<tr><td>P08 Denominadores</td><td>Cero unidades, datos ausentes y cobertura insuficiente no causan divisiones por cero ni se muestran como eficiencia perfecta.</td></tr>
+<tr><td>P09 Persistencia</td><td>Tras detener y arrancar servicios, el catálogo y resultados siguen disponibles sin regeneración involuntaria.</td></tr>
+<tr><td>P10 Formatos y motores</td><td>Parquet y Avro se releen correctamente; pandas y Spark coinciden en la operación comparada.</td></tr>
+<tr><td>P11 Fallo controlado</td><td>Un fichero inválido genera un registro de error; no publica una ejecución parcial como resultado correcto.</td></tr>
+</tbody></table>
+<h2 id="s15">15 Entregables y estructura del repositorio</h2>
+<p>Entregad en Moodle la URL del repositorio, el identificador del commit o etiqueta v1.0 y el informe técnico. El repositorio puede ser privado con acceso para el profesor; su publicación como portfolio es opcional. No se exige una cuenta o servicio de pago.</p>
+<p>El README explicará el problema, requisitos, puesta en marcha, comandos, arquitectura, capturas, pruebas y limitaciones. Adjuntad un vídeo de 3–5 minutos y un registro breve de aportaciones individuales con enlaces a issues, commits y revisiones. Las capturas acompañan al sistema ejecutable, no lo reemplazan.</p>
+<p>Incluid una muestra pequeña y los escenarios de referencia. Los históricos grandes se generarán mediante instrucciones; no se subirán a Git. Citad fuentes de código y documentación y declarad las ayudas utilizadas, incluida IA, explicando qué habéis comprobado.</p>
+<pre>industrialdata/
+  README.md
+  compose.yaml
+  .env.example
+  .gitignore
+  docker/                 # Dockerfiles y configuración
+  sql/                    # Esquema y catálogo inicial
+  src/industrialdata/     # Generación, ingesta, calidad y análisis
+  dashboard/              # Panel
+  notebooks/              # Exploración y comparación pandas Spark
+  tests/                  # Datos pequeños y resultados esperados
+  sample_data/            # Muestra y escenarios esperados
+  schemas/                # Contratos y esquema Avro
+  docs/                   # Modelo, diccionario y decisiones
+  reports/                # Informe, pruebas y rendimiento
+  data/                   # Datos generados excluidos de Git</pre>
+<h2 id="s16">16 Rúbrica y cálculo de la calificación</h2>
+<p>RA1: Aplica técnicas de análisis de datos que integran, procesan y analizan la información, adaptando e implementando sistemas que las utilicen.</p>
+<p>Se evalúan los siete criterios del RA1 con los pesos siguientes. En cada criterio se asigna un nivel de 0 a 4: 0 sin evidencia; 1 inicial; 2 básico; 3 competente; 4 avanzado. La puntuación del criterio es peso × nivel / 4. La suma da hasta 100 puntos y se divide entre 10 para obtener la nota.</p>
+<p>Para cada alumno, el nivel de cada criterio se calcula como 80 % de las evidencias de su propio proyecto individual y 20 % de la comprobación individual mediante preguntas o una modificación breve relacionada con ese criterio. Se aplican los mismos descriptores; no se usa el número de commits como medida de aprendizaje. Esta fórmula corresponde a esta práctica y queda subordinada a los acuerdos de evaluación del módulo.</p>
+<p>Las ampliaciones no suman puntos fuera de la rúbrica. Pueden aportar evidencia de un nivel superior si el núcleo funciona. Los niveles se asignan según el descriptor alcanzado; una evidencia aislada no compensa requisitos esenciales ausentes.</p>
+<table><thead><tr><th>Criterio</th><th>Peso</th><th>Evidencias principales</th></tr></thead><tbody>
+<tr><td>a Matemática discreta lógica y complejidad</td><td>15 %</td><td>Conjuntos, relaciones, reglas y experimento lista/conjunto.</td></tr>
+<tr><td>b Extracción automática de información y conocimiento de grandes volúmenes</td><td>20 %</td><td>Ingesta, perfiles de volumen, resultados y hallazgos.</td></tr>
+<tr><td>c Combinación de diferentes fuentes y tipos de datos</td><td>15 %</td><td>JSON, CSV, SQL y conversiones verificadas.</td></tr>
+<tr><td>d Construcción y relación de conjuntos de datos complejos</td><td>15 %</td><td>Modelo, claves, intervalos, cardinalidad y trazabilidad.</td></tr>
+<tr><td>e Objetivos prioridades secuenciación y tiempo</td><td>10 %</td><td>Tablero, hitos, revisiones y aportaciones.</td></tr>
+<tr><td>f Selección e integración de sistemas adecuados</td><td>10 %</td><td>Docker, automatización, persistencia y decisiones.</td></tr>
+<tr><td>g Criterios de coste y calidad para eficacia y eficiencia</td><td>15 %</td><td>Pruebas, calidad, comparaciones y estimaciones.</td></tr>
+</tbody></table>
+<h2 id="s17">Rúbrica a Matemática discreta lógica y complejidad</h2>
+<ul>
+<li>4 Avanzado: aplica correctamente conjuntos, relaciones y reglas con estados no evaluables; prueba casos límite y contrasta complejidad teórica con mediciones que incluyen preparación y limitaciones.</li>
+<li>3 Competente: conjuntos, relaciones y tres reglas correctas; compara lista y conjunto con varios tamaños y explica el coste esperado.</li>
+<li>2 Básico: aplica conjuntos y reglas simples; presenta una comparación ejecutable, pero justifica de forma incompleta la complejidad o los casos límite.</li>
+<li>1 Inicial: aporta definiciones o código aislado con errores de aplicación; no demuestra la comparación.</li>
+</ul>
+<h2 id="s18">Rúbrica b Extracción automática y conocimiento</h2>
+<ul>
+<li>4 Avanzado: ingesta reproducible y recuperable, procesa los perfiles previstos y extrae hallazgos contrastados; demuestra actualización con lotes tardíos y explica límites de escalabilidad.</li>
+<li>3 Competente: extracción automática funcional, perfiles ejecutados o alternativa acordada, y cuatro hallazgos respaldados por datos.</li>
+<li>2 Básico: automatiza una ejecución y obtiene indicadores, pero hay pasos manuales relevantes o evidencia limitada del volumen y las conclusiones.</li>
+<li>1 Inicial: depende de manipulación manual, procesa una muestra sin trazabilidad o presenta conclusiones no verificables.</li>
+</ul>
+<h2 id="s19">Rúbrica c Fuentes y formatos</h2>
+<ul>
+<li>4 Avanzado: integra las cuatro fuentes con contratos explícitos, detecta cambios de estructura y verifica conversiones sin pérdida semántica; justifica cada formato.</li>
+<li>3 Competente: integra JSON, CSV y PostgreSQL con tipos y unidades coherentes; escribe y relee Parquet y Avro correctamente.</li>
+<li>2 Básico: combina varias fuentes y genera Parquet, pero deja comprobaciones de tipos, unidades o Avro incompletas.</li>
+<li>1 Inicial: muestra fuentes por separado o realiza conversiones que alteran valores sin detectarlo.</li>
+</ul>
+<h2 id="s20">Rúbrica d Modelo y relaciones</h2>
+<ul>
+<li>4 Avanzado: modelo consistente y versionado; prueba cardinalidades, límites temporales y conflictos; conserva trazabilidad hasta la fuente y actualiza agregados sin pérdidas.</li>
+<li>3 Competente: claves e intervalos correctos, relaciones documentadas, control de huérfanos y duplicados, y totales conservados tras integrar.</li>
+<li>2 Básico: modelo utilizable y joins principales correctos, pero presenta lagunas en intervalos, huérfanos o trazabilidad.</li>
+<li>1 Inicial: joins que multiplican datos, deduplicación por máquina o ausencia de claves y modelo.</li>
+</ul>
+<h2 id="s21">Rúbrica e Planificación y seguimiento individual</h2>
+<ul>
+<li>4 Avanzado: objetivos medibles y tareas priorizadas con criterios de cierre; revisiones propias y ajustes razonados de planificación; decisiones trazables y comprensión del flujo completo.</li>
+<li>3 Competente: tablero actualizado durante el trabajo, hitos, estimaciones de tiempo y revisiones con evidencias.</li>
+<li>2 Básico: planificación inicial y secuencia de tareas identificable, con seguimiento irregular o revisiones escasas.</li>
+<li>1 Inicial: planificación informal o tablero creado al final, sin evidencia del seguimiento.</li>
+</ul>
+<h2 id="s22">Rúbrica f Sistemas e integración</h2>
+<ul>
+<li>4 Avanzado: despliegue reproducible probado desde clon limpio; fallos y dependencias controlados, resultados publicados coherentemente y decisiones comparadas con alternativas.</li>
+<li>3 Competente: Docker ejecuta el flujo completo con healthcheck, persistencia, configuración externa e instrucciones correctas; justifica herramientas.</li>
+<li>2 Básico: sistema funcional con ajustes manuales documentados o carencias parciales en persistencia y disponibilidad.</li>
+<li>1 Inicial: servicios aislados, dependencia de rutas personales o despliegue que no se puede reproducir.</li>
+</ul>
+<h2 id="s23">Rúbrica g Calidad coste y eficiencia</h2>
+<ul>
+<li>4 Avanzado: pruebas de aceptación completas, reconciliación y calidad visibles; experimentos repetidos y comparables; estimaciones con hipótesis explícitas y decisiones derivadas de resultados.</li>
+<li>3 Competente: controles e indicadores correctos, pruebas fundamentales, comparaciones de formatos y motores con resultados equivalentes y costes documentados.</li>
+<li>2 Básico: controles parciales y una medición de rendimiento; faltan casos críticos, repetición o justificación de estimaciones.</li>
+<li>1 Inicial: elimina anomalías sin criterio, oculta ausencias o presenta tiempos y costes sin método verificable.</li>
+</ul>
+<h2 id="s24">17 Defensa y revisión individual</h2>
+<p>La demostración individual durará aproximadamente 12 minutos: contexto y arquitectura, ejecución, panel y prueba de una incidencia elegida por el profesor. Después el alumno responderá preguntas o realizará una modificación breve, durante unos 5 minutos.</p>
+<p>Ejemplos de comprobación: cambiar un umbral y explicar el efecto; localizar el origen de una fila rechazada; demostrar que una carga repetida no altera los totales; explicar kW frente a kWh; justificar un join temporal; interpretar una medición de memoria; mostrar cómo se reorganizó una tarea del tablero.</p>
+<p>Preparad la demostración sobre una muestra pequeña para que pueda ejecutarse durante la defensa. El histórico ampliado se acredita con resultados, parámetros, versiones y registro de ejecución.</p>
+<h2 id="s25">18 Lista de revisión antes de entregar</h2>
+<ul>
+<li>El README permite reproducir la muestra desde un clon limpio.</li>
+<li>Los datos son reproducibles y los escenarios esperados están separados del detector.</li>
+<li>Las pruebas P01–P11 tienen evidencia y los fallos pendientes se declaran.</li>
+<li>El panel distingue cero, ausencia de datos, rechazo y anomalía.</li>
+<li>Las unidades, zonas horarias, granularidades y fórmulas están documentadas.</li>
+<li>Los originales se conservan y la segunda carga no duplica resultados.</li>
+<li>El repositorio contiene muestras, código y documentación, sin credenciales ni históricos voluminosos.</li>
+<li>La entrega incluye commit o etiqueta, informe, vídeo y aportaciones individuales.</li>
+<li>El alumno puede explicar el flujo completo y sus decisiones.</li>
+</ul>
+<h2 id="s26">19 Ampliaciones y documentación de consulta</h2>
+<p>Una vez completado el núcleo, podéis incorporar MQTT, una API de consulta, pruebas automáticas en GitHub Actions, una segunda planta o una comparación con almacenamiento en nube. Acordad el alcance con el profesor. Una ampliación debe aportar una pregunta y evidencia, no solamente una herramienta nueva.</p>
+<p>Documentación oficial consultada el 21 de octubre de 2026. La selección de versiones y su comprobación forman parte de la implementación. PySpark 4.0.3 admite Java 17 o 21 y Python 3.9 o posterior; el proyecto debe registrar la combinación concreta utilizada.</p>
+<ul>
+<li>Docker Compose y dependencias: https://docs.docker.com/compose/how-tos/startup-order/</li>
+<li>Especificación de servicios: https://docs.docker.com/reference/compose-file/services/</li>
+<li>Apache Spark 4.0.3: https://spark.apache.org/docs/4.0.3/</li>
+<li>Materiales del curso: UT1 Fundamentos matemáticos y algoritmos; Introducción al procesamiento; Técnicas y procesos de extracción; Preproceso de datos; Formatos; Planificación con GitHub Projects; Manual de Docker. AWS se reserva como ampliación.</li>
+</ul>
+</main></html>

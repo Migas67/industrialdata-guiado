@@ -1,0 +1,34 @@
+name: Tarea de IndustrialData
+description: Planificar una tarea con criterio de cierre verificable.
+title: "[Hito] Tarea"
+body:
+  - type: dropdown
+    id: hito
+    attributes:
+      label: Hito
+      options: [H1 Diseño, H2 Infraestructura y simulación, H3 Ingesta y calidad, H4 Análisis y panel, H5 Rendimiento y pruebas, H6 Entrega]
+    validations:
+      required: true
+  - type: dropdown
+    id: prioridad
+    attributes:
+      label: Prioridad
+      options: [Alta, Media, Baja]
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo y criterio del RA1
+      description: Explica el resultado buscado y su relación con el enunciado.
+    validations:
+      required: true
+  - type: textarea
+    id: cierre
+    attributes:
+      label: Criterios de cierre y comprobación
+      description: Qué evidencia permitirá cerrar la tarea y cómo reproducirla.
+    validations:
+      required: true
+  - type: textarea
+    id: organizacion
+    attributes:
+      label: Responsable, revisión, estimación y dependencias

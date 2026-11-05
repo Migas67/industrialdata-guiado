@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="650" viewBox="0 0 1120 650" role="img" aria-labelledby="title desc">
+<title id="title">Arquitectura objetivo de IndustrialData</title>
+<desc id="desc">El simulador produce fuentes originales. El pipeline las integra con el catálogo PostgreSQL, genera capas de datos y publica resultados para el panel. Simulador, catálogo y panel proporcionados. El alumno completa A1–A7 para obtener resultados válidos.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#52657b"/></marker></defs>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#162c43}.title{font-size:26px;font-weight:700}.head{font-size:21px;font-weight:700}.body{font-size:17px}.small{font-size:15px}.blue{fill:#e8f2ff;stroke:#3979b3;stroke-width:2}.amber{fill:#fff3dc;stroke:#b87d1c;stroke-width:2}.gray{fill:#f0f3f6;stroke:#8796a7;stroke-width:2}.line{fill:none;stroke:#52657b;stroke-width:2.5;marker-end:url(#arrow)}</style>
+<rect width="1120" height="650" rx="18" fill="#fafcff"/>
+<text x="40" y="43" class="title">IndustrialData · De los datos al panel</text>
+<rect x="40" y="66" width="17" height="17" rx="3" class="blue"/><text x="66" y="80" class="small">Proporcionado y preparado</text>
+<rect x="310" y="66" width="17" height="17" rx="3" class="amber"/><text x="336" y="80" class="small">Actividades del alumno</text>
+<rect x="560" y="66" width="17" height="17" rx="3" class="gray"/><text x="586" y="80" class="small">Datos que creará vuestro proyecto</text>
+<path class="line" d="M280 185 H350"/>
+<path class="line" d="M570 185 H650"/>
+<path class="line" d="M865 240 V285 H505 V345"/>
+<text x="665" y="276" class="small">Procesar y publicar</text>
+<path class="line" d="M280 398 H315 V270 H615 V202 H650"/>
+<text x="331" y="259" class="small">Consultar catálogo y registrar cargas</text>
+<path class="line" d="M630 408 H750"/>
+<text x="645" y="394" class="small">Leer</text>
+
+<rect x="40" y="125" width="240" height="115" rx="13" class="blue"/>
+<text x="58" y="157" class="head">1 · Simulador dado</text>
+<text x="58" y="186" class="body">Telemetría · JSON Lines</text>
+<text x="58" y="211" class="body">Producción y mant. · CSV</text>
+<rect x="350" y="125" width="220" height="115" rx="13" class="gray"/>
+<text x="368" y="157" class="head">2 · Raw</text>
+<text x="368" y="186" class="body">Originales + manifiestos</text>
+<text x="368" y="211" class="small">Conservar y añadir entradas</text>
+<rect x="650" y="125" width="430" height="115" rx="13" class="amber"/>
+<text x="670" y="157" class="head">3 · A1–A6 del alumno</text>
+<text x="670" y="186" class="body">Validar · integrar · controlar calidad</text>
+<text x="670" y="212" class="body">Aplicar reglas · calcular indicadores</text>
+
+<rect x="40" y="345" width="240" height="135" rx="13" class="blue"/>
+<text x="58" y="377" class="head">PostgreSQL · db</text>
+<text x="58" y="407" class="body">Catálogo y cargas</text>
+<text x="58" y="435" class="small">SQL y catálogo dados</text>
+<text x="58" y="458" class="small">Consultar y explicar relaciones</text>
+<rect x="380" y="345" width="250" height="135" rx="13" class="gray"/>
+<text x="398" y="377" class="head">4 · Resultados</text>
+<text x="398" y="406" class="body">Silver · datos normalizados</text>
+<text x="398" y="433" class="body">Gold · episodios y métricas</text>
+<text x="398" y="458" class="small">Quarantine · rechazos trazables</text>
+<rect x="750" y="345" width="330" height="135" rx="13" class="blue"/>
+<text x="770" y="377" class="head">5 · Panel · dashboard</text>
+<text x="770" y="407" class="body">Estado · energía · calidad</text>
+<text x="770" y="435" class="small">Panel completo proporcionado</text>
+<text x="770" y="458" class="small">Se alimenta con TUS resultados</text>
+
+<rect x="40" y="533" width="1040" height="75" rx="13" fill="#162c43"/>
+<text x="60" y="562" style="fill:white;font-size:19px;font-weight:700;font-family:Arial">Persistencia: los datos deben sobrevivir a una parada y un nuevo arranque</text>
+<text x="60" y="590" style="fill:#e3ebf5;font-size:17px;font-family:Arial">Carpeta local data/ → archivos   ·   Volumen pgdata → PostgreSQL   ·   GitHub → código y evidencias pequeñas</text>
+<text x="40" y="633" class="small">Apoyo: lectura, integración temporal y publicación. Alumno: validación, duplicados, reglas, energía y A7 pandas/Spark.</text>
+</svg>
