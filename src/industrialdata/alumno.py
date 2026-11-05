@@ -67,7 +67,7 @@ def superaciones(values, limit):
     """A3. Lista de bool: valor estrictamente mayor que limit.
     La agrupación temporal, 5/3 muestras y corte de huecos ya están proporcionados.
     """
-    raise NotImplementedError('A3 pendiente: superaciones')
+    return [v > limit for v in values]
 
 def estados(known_zero, values, planned, idle_kw):
     """A4. Dict con listas bool: idle_consumption, planned_stop, unplanned_stop.

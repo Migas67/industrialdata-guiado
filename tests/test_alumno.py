@@ -88,3 +88,12 @@ def test_A2_propio_colision_tiene_prioridad():
     row,_,_=sample()
     with pytest.raises(ValueError,match='event_id_collision'):
         a.clasificar(row,row.copy(),True)
+def test_A3_propio_secuencia_normal_sin_superaciones():
+      assert a.superaciones([60,65,70,75,80],80)==[False]*5
+
+def test_A3_propio_superacion_suficiente():
+    assert a.superaciones([81,85,90,88,82],80)==[True]*5
+
+def test_A3_propio_lista_vacia_y_decimales():
+    assert a.superaciones([],80)==[]
+    assert a.superaciones([80.0,80.0001],80)==[False,True]
