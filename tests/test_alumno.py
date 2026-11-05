@@ -110,3 +110,21 @@ def test_A4_propio_produccion_desconocida_nunca_afirma_nada():
 def test_A4_propio_longitudes_y_vacio():
     flags=a.estados([],[],[],.1)
     assert flags=={'idle_consumption':[],'planned_stop':[],'unplanned_stop':[]}
+
+def test_A5_propio_P07_2kW_media_hora():
+      start=timestamp('2026-01-01T00:00:00Z')
+      times=[start+timedelta(minutes=i) for i in range(31)]          # 00:00..00:30 incluido
+      assert a.energia(times,[2]*31,start,times[-1])==pytest.approx((1,1800))
+
+def test_A5_propio_recorte_al_limite_horario():
+    t0=timestamp('2026-01-01T00:59:00Z')
+    times=[t0,t0+timedelta(minutes=1),t0+timedelta(minutes=2)]       # 00:59, 01:00, 01:01
+    hora=timestamp('2026-01-01T01:00:00Z')
+    assert a.energia(times,[6,6,6],hora,hora+timedelta(hours=1))==pytest.approx((.1,60))
+
+def test_A5_propio_valor_izquierdo_y_hueco_parcial():
+    s=timestamp('2026-01-01T00:00:00Z')
+    times=[s,s+timedelta(minutes=1),s+timedelta(minutes=10),s+timedelta(minutes=11)]
+    kwh,seg=a.energia(times,[6,12,3,99],s,s+timedelta(minutes=15))
+    assert seg==pytest.approx(120)                                   # solo 2 segmentos válidos
+    assert kwh==pytest.approx(6*60/3600+3*60/3600)                   # usa valor izquierdo

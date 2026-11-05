@@ -91,7 +91,22 @@ def energia(times, values, start, end, cadence=60):
     Fechas ordenadas con zona. Retención del valor izquierdo entre muestras.
     Solo huecos positivos <= 1.5*cadence; recortar al periodo; no extrapolar.
     """
-    raise NotImplementedError('A5 pendiente: energia')
+    kwh = 0.0
+    cubiertos = 0.0
+    max_hueco = 1.5 * cadence
+    for i in range(len(times) - 1):
+        t1, t2 = times[i], times[i + 1]
+        hueco = (t2 - t1).total_seconds()
+        if hueco <= 0 or hueco > max_hueco:
+            continue                          # hueco largo: sin estimar
+        ini = max(t1, start)                  # recortar a [start, end)
+        fin = min(t2, end)
+        segundos = (fin - ini).total_seconds()
+        if segundos <= 0:
+            continue                          # segmento fuera del periodo
+        kwh += values[i] * segundos / 3600    # potencia de la IZQUIERDA
+        cubiertos += segundos
+    return kwh, cubiertos
 
 def intensidad(kwh, units_ok, energy_coverage, production_coverage, crossing):
     """A6. kWh/pieza correcta o None si no es evaluable.
